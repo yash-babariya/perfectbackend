@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const username = req.body.username;
-        const name = username + "_" + "profilePicture";
+        const name = username + "_" + "profilePicture" + file.originalname;
         cb(null, name);
     }
 });
