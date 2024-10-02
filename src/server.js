@@ -9,7 +9,7 @@ const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use("/files", express.static("uploads"));
+app.use("/files", express.static("uploads"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/v1", routes);
 
