@@ -8,6 +8,11 @@ import validator from "../middlewares/validator.js";
 import upload from "../middlewares/upload.js";
 const router = Router();
 
+router.get("/", (req, res) => {
+    res.json({
+        message: "Hello Developer! this is yash babariya's api",
+    });
+});
 
 router.post("/signup", upload, validator(signup.validator), signup.handler);
 router.post("/login", validator(login.validator), login.handler);
