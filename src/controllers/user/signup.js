@@ -24,7 +24,7 @@ export default {
             const user = await User.create({ username, email, password: hashedPassword, profilePicture });
             res.status(201).json({ message: "User created successfully", user });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({ messageeeeeeee: error.message });
         }
     }
 }
