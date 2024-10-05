@@ -22,6 +22,10 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
+app.get("*", (req, res) => {
+    responseHelper.notFound(res, "Route not found");
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
