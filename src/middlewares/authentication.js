@@ -4,20 +4,28 @@ import responseHelper from "../utils/responseHelper.js";
 
 export default (roles = ["user", "admin"]) => (req, res, next) => {
     try {
-        let token = req.headers.authorization.split(" ")[1];
-        if (!token) {
-            return responseHelper.unauthorized(res, "token is required");
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return responseHelper.unauthorized(res, "Authorization header is missing");
         }
+
+        const [bearer, token] = authHeader.split(" ");
+        if (bearer !== "Bearer" || !token) {
+            return responseHelper.unauthorized(res, "Invalid authorization format");
+        }
+
         const decoded = jwt.verify(token, JWT_SECRET);
-        if (!decoded) {
-            return responseHelper.unauthorized(res, "invalid token");
-        }
         req.user = decoded;
-        if (roles && !roles.includes(decoded.role)) {
-            return responseHelper.unauthorized(res, "You are not authorized to access this route");
+
+        if (roles.length > 0 && !roles.includes(decoded.role)) {
+            return responseHelper.forbidden(res, "Insufficient permissions to access this route");
         }
+
         return next();
     } catch (error) {
-        return responseHelper.unauthorized(res, error.message);
+        if (error instanceof jwt.JsonWebTokenError) {
+            return responseHelper.unauthorized(res, "Invalid token");
+        }
+        return responseHelper.internalServerError(res, "Authentication error");
     }
 }
