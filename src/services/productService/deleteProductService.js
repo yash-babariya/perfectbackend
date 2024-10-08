@@ -1,8 +1,8 @@
-import User from "../../models/userModel.js";
+import Product from "../../models/productModel.js";
 import responseHelper from "../../utils/responseHelper.js";
 
 export default {
-    deleteUser: async (req, res) => {
+    deleteProduct: async (req, res) => {
         const { id } = req.params;
         const { role, id: currentUserId } = req.user;
         if (role === 'admin' || currentUserId === id) {
@@ -11,8 +11,14 @@ export default {
                 return responseHelper.badRequest(res, "User not found");
             }
             return responseHelper.success(res, "User deleted successfully", deletedUser);
-        } else {
-            return responseHelper.forbidden(res, "Permission denied");
         }
+
+        const deletedProduct = await Product.findByIdAndDelete(query, { new: true });
+
+        if (!deletedProduct) {
+            return responseHelper.notFound(res, "Product not found or you're not authorized to delete it");
+        }
+
+        return responseHelper.success(res, "Product deleted successfully", { deletedProduct });
     }
 }

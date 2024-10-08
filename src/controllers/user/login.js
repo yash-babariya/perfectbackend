@@ -13,14 +13,7 @@ export default {
     }),
     handler: async (req, res) => {
         try {
-            const { username, email, password } = req.body;
-            const result = await LoginService.loginUser({ username, email, password });
-            if (!result.success) {
-                return responseHelper.badRequest(res, result.message);
-            }
-
-            return responseHelper.success(res, "Login successful", { token: result.token });
-
+            await LoginService.loginUser(req, res);
         } catch (error) {
             return responseHelper.internalServerError(res, error.message);
         }

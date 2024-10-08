@@ -11,12 +11,7 @@ export default {
     }),
     handler: async (req, res) => {
         try {
-            const { id } = req.params;
-            const result = await deleteUserService.deleteUser(id, req.user);
-            if (!result.success) {
-                return responseHelper.badRequest(res, result.message);
-            }
-            return responseHelper.success(res, "User deleted successfully", result.data);
+            await deleteUserService.deleteUser(req, res);
         } catch (error) {
             return responseHelper.internalServerError(res, error.message);
         }

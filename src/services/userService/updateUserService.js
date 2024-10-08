@@ -1,15 +1,17 @@
 import User from "../../models/userModel.js";
+import responseHelper from "../../utils/responseHelper.js";
 
 export default {
-    updateUser: async (id, data) => {
-        const { username } = data;
+    updateUser: async (req, res) => {
+        const { username } = req.body;
+        const { id } = req.user;
         const existingUser = await User.findOne({ username, _id: { $ne: id } });
         if (existingUser) {
-            return { success: false, message: "Username already exists" };
+            return responseHelper.badRequest(res, "Username already exists");
         }
         const user = await User.findByIdAndUpdate(id, { username }, {
             new: true,
         });
-        return { success: true, data: user };
+        return responseHelper.success(res, "User updated successfully", user);
     }
 }

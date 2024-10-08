@@ -1,5 +1,3 @@
-import User from "../../models/userModel.js";
-import { compare, hash } from "bcrypt";
 import responseHelper from "../../utils/responseHelper.js";
 import changePasswordService from "../../services/userService/changePasswordService.js";
 
@@ -13,12 +11,7 @@ export default {
     },
     handler: async (req, res) => {
         try {
-            const { oldPassword, newPassword } = req.body;
-            const result = await changePasswordService.changePassword(oldPassword, newPassword, req.user);
-            if (!result.success) {
-                return responseHelper.badRequest(res, result.message);
-            }
-            return responseHelper.success(res, "Password changed successfully", result.data);
+            await changePasswordService.changePassword(req, res);
         } catch (error) {
             return responseHelper.internalServerError(res, error.message);
         }

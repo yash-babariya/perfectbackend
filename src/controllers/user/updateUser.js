@@ -12,12 +12,7 @@ export default {
   }),
   handler: async (req, res) => {
     try {
-      const { username } = req.body;
-      const result = await updateUserService.updateUser(req.user.id, { username });
-      if (!result.success) {
-        return responseHelper.badRequest(res, result.message);
-      }
-      return responseHelper.success(res, "User updated successfully", result.data);
+      await updateUserService.updateUser(req, res);
     } catch (error) {
       return responseHelper.internalServerError(res, error.message);
     }

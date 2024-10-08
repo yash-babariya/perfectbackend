@@ -14,9 +14,7 @@ export default {
     }),
     handler: async (req, res) => {
         try {
-            const { username, email, role, password } = req.body;
-            const user = await SignUpService.signUp({ username, email, role, password });
-            return responseHelper.success(res, "User created successfully", user);
+            await SignUpService.signUp(req, res);
         } catch (error) {
             return responseHelper.internalServerError(res, error.message);
         }
