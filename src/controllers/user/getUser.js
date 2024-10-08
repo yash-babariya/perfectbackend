@@ -1,21 +1,23 @@
-import User from "../../models/userModel.js";
 import responseHelper from "../../utils/responseHelper.js";
+import getUserService from "../../services/userService/getUserService.js";
+
 export default {
+  validator: (req, res, next) => {
+    if (!["admin", "user", "seller"].includes(req.user.role)) {
+      return responseHelper.forbidden(res, "Unauthorized");
+    }
+    next();
+  },
   handler: async (req, res) => {
     try {
-      const role = req.user.role;
-      if (role === "user") {
-        const user = await User.findById(req.user.id);
-        if (!user) {
-          return responseHelper.notFound(res, "User not found");
-        }
-        responseHelper.success(res, "User fetched successfully", user);
-      } else {
-        const users = await User.find();
-        responseHelper.success(res, "Users fetched successfully", users);
+      const { role, id } = req.user;
+      const result = await getUserService.getUser(id, role);
+      if (!result.success) {
+        return responseHelper.badRequest(res, result.message);
       }
+      return responseHelper.success(res, "User fetched successfully", result.data);
     } catch (error) {
-      responseHelper.internalServerError(res, error.message);
+      return responseHelper.internalServerError(res, error.message);
     }
   },
 };

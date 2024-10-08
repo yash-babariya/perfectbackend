@@ -1,6 +1,7 @@
 import User from "../../models/userModel.js";
 import { compare, hash } from "bcrypt";
 import responseHelper from "../../utils/responseHelper.js";
+import changePasswordService from "../../services/userService/changePasswordService.js";
 
 export default {
     validator: (req, res, next) => {
@@ -13,20 +14,13 @@ export default {
     handler: async (req, res) => {
         try {
             const { oldPassword, newPassword } = req.body;
-            const user = await User.findById(req.user.id);
-            if (!user) {
-                return responseHelper.notFound(res, "User not found");
+            const result = await changePasswordService.changePassword(oldPassword, newPassword, req.user);
+            if (!result.success) {
+                return responseHelper.badRequest(res, result.message);
             }
-            const isMatch = await compare(oldPassword, user.password);
-            if (!isMatch) {
-                return responseHelper.badRequest(res, "Old password is incorrect");
-            }
-            const hashedPassword = await hash(newPassword, 10);
-            user.password = hashedPassword;
-            await user.save();
-            responseHelper.success(res, "Password changed successfully");
+            return responseHelper.success(res, "Password changed successfully", result.data);
         } catch (error) {
-            responseHelper.internalServerError(res, error.message);
+            return responseHelper.internalServerError(res, error.message);
         }
     },
 };

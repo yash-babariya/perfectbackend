@@ -16,11 +16,6 @@ export default (roles = ["user", "admin"]) => (req, res, next) => {
 
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
-
-        if (roles.length > 0 && !roles.includes(decoded.role)) {
-            return responseHelper.forbidden(res, "Insufficient permissions to access this route");
-        }
-
         return next();
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
